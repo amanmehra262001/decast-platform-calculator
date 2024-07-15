@@ -26,6 +26,7 @@ export default function Home() {
   const [BZZPerGBPerMonth, setBZZPerGBPerMonth] = useState(0.3261);
   const [minCastRecording, setMinCastRecording] = useState(1.2);
   const [minutesAllocated, setMinutesAllocated] = useState(0);
+  const PLATFORM_FEE_PERCENTAGE = 0.01;
 
   const handleChange = (e: any) => {
     switch (e.target.name) {
@@ -42,9 +43,10 @@ export default function Home() {
   };
 
   const getMinutesAllocated = () => {
-    let bzzAmount = rechargeAmount;
+    const _platformFee = rechargeAmount * PLATFORM_FEE_PERCENTAGE;
+    let bzzAmount = rechargeAmount - _platformFee;
     if (currency !== "BZZ") {
-      bzzAmount = rechargeAmount / BZZPrize;
+      bzzAmount = (rechargeAmount - _platformFee) / BZZPrize;
     }
     const mbperBZZperMonth = 1024 / BZZPerGBPerMonth;
     const minutesAllocated = (bzzAmount * mbperBZZperMonth) / minCastRecording;
@@ -126,6 +128,10 @@ export default function Home() {
         </div>
 
         <div className="flex flex-col gap-4 text-gray-500 text-xs px-2">
+          <div className="flex items-center justify-between">
+            <p>Platform Fee(1%)</p>
+            <p>{rechargeAmount * PLATFORM_FEE_PERCENTAGE}</p>
+          </div>
           <div className="flex items-center justify-between">
             <p>BZZ Prize(USD)</p>
             <p>{BZZPrize}</p>
