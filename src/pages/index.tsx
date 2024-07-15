@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,11 +23,25 @@ export default function Home() {
   const [currency, setCurrency] = useState("USDC");
   const [userBalance, setUserBalance] = useState<UserBalance>(initialBalance);
   const [rechargeAmount, setRechargeAmount] = useState(0);
-  const [BZZPrize, setBZZPrize] = useState(0.3216);
+  const [BZZPrize, setBZZPrize] = useState(0);
   const [BZZPerGBPerMonth, setBZZPerGBPerMonth] = useState(0.3261);
   const [minCastRecording, setMinCastRecording] = useState(1.2);
   const [minutesAllocated, setMinutesAllocated] = useState(0);
   const PLATFORM_FEE_PERCENTAGE = 0.01;
+
+  const fetchBZZUSDTPrize = async () => {
+    axios
+      .get(
+        "https://rest.coinapi.io/v1/exchangerate/USDT/BZZ?apikey=399519D6-A869-4322-A969-E04BFA9D8553&invert=true&output_format=json"
+      )
+      .then((res) => {
+        setBZZPrize(1 / res.data.rate);
+      });
+  };
+
+  useEffect(() => {
+    fetchBZZUSDTPrize();
+  }, []);
 
   const handleChange = (e: any) => {
     switch (e.target.name) {
@@ -129,7 +144,7 @@ export default function Home() {
 
         <div className="flex flex-col gap-4 text-gray-500 text-xs px-2">
           <div className="flex items-center justify-between">
-            <p>Platform Fee(1%)</p>
+            <p>Platform Fee(1-5%)</p>
             <p>{rechargeAmount * PLATFORM_FEE_PERCENTAGE}</p>
           </div>
           <div className="flex items-center justify-between">
